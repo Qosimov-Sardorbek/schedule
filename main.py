@@ -5,15 +5,14 @@ from telegram.ext import (
 )
 from datetime import datetime
 import time
-import asyncio
 import os
+import tempfile
 from dotenv import load_dotenv
 
 
 load_dotenv()
 
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # HEMIS imports
@@ -1609,7 +1608,9 @@ from playwright.sync_api import sync_playwright
 def take_timetable_screenshot(guruh):
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
-        file_path = f"/tmp/{guruh}.png"
+        # Windowsda va Linuxda mos tushadigan vaqtinchalik yo'l
+        temp_dir = tempfile.gettempdir()
+        file_path = os.path.join(temp_dir, f"{guruh}.png")
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -1781,67 +1782,7 @@ def choose_language(update, context):
     else:
         update.message.reply_text(msg_text, reply_markup=reply_markup)
 
-def main_menu(update, context):
-    """Main Menu: Timetable vs HEMIS"""
-    # If called from callback_query, update is the callback_query
-    # If called from message, update is the update object
-    
-    if hasattr(update, "message"):
-        # update is a CallbackQuery or Update?
-        # CallbackQuery has .message
-        # Update has .message
-        # Let's handle both safely
-        if hasattr(update, "callback_query") and update.callback_query:
-             # It's an update with a callback query? NO.
-             # If passed 'query' (CallbackQuery object) directly:
-             message = update.message
-        elif hasattr(update, "message"):
-             message = update.message
-        else:
-             # Fallback
-             return
-    else:
-         # Maybe passed 'update' but it's a CallbackQuery object?
-         # CallbackQuery has a message attribute
-         message = update.message
-
-    # Get language
-    lang = context.user_data.get("lang", "uz")
-    s = STRINGS[lang]
-    
-    keyboard = [
-        [KeyboardButton(s["btn_timetable"]), KeyboardButton(s["btn_hemis"])]
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    
-    # Text
-    text = s["welcome"] # Using welcome text as prompt
-    
-    # Send
-    context.bot.send_message(
-        chat_id=message.chat_id,
-        text=text,
-        parse_mode="Markdown",
-        reply_markup=reply_markup
-    )
-
-def timetable_menu(update, context):
-    """Timetable Menu"""
-    lang = context.user_data.get("lang", "uz")
-    s = STRINGS[lang]
-    
-    keyboard = [
-        [KeyboardButton(s["btn_bugun"]), KeyboardButton(s["btn_guruh"])],
-        [KeyboardButton(s["btn_notif"]), KeyboardButton(s["btn_lang"])],
-        [KeyboardButton(s["btn_yordam"]), KeyboardButton(s["btn_back"])],
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    
-    update.message.reply_text(
-        s["timetable_menu_text"],
-        parse_mode="Markdown",
-        reply_markup=reply_markup
-    )
+# Removed duplicate main_menu and timetable_menu definitions
 
 def guruh_tanlash(update, context):
     """Guruhlar"""

@@ -20,7 +20,7 @@ class HemisAPI:
             r = self.session.post(
                 f"{self.base_url}/auth/login",
                 json={"login": username, "password": password},
-                timeout=10
+                timeout=20
             )
             print(f"DEBUG: Login status code: {r.status_code}")
             print(f"DEBUG: Login response: {r.text[:200]}") # Print first 200 chars
@@ -48,7 +48,7 @@ class HemisAPI:
             r = self.session.post(
                 f"{self.base_url}/auth/refresh",
                 json={"refresh_token": refresh_token},
-                timeout=10
+                timeout=20
             )
             if r.status_code == 200:
                 data = r.json()["data"]
