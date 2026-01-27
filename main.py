@@ -1616,78 +1616,78 @@ def take_timetable_screenshot(guruh):
         file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
 
         with sync_playwright() as p:
-            # Launch with specific arguments for reliability on Linux
+            # Launch with specific arguments
             browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
             
-            # Use a slightly larger viewport and older user agent for better compatibility
+            # Use a modern user agent and common window size
             context = browser.new_context(
-                viewport={"width": 1440, "height": 1080},
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                viewport={"width": 1366, "height": 768},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
             )
             page = context.new_page()
             
             # Go to URL
             try:
-                page.goto(url, timeout=45000, wait_until="load")
+                page.goto(url, timeout=60000, wait_until="networkidle")
             except Exception as e:
                 print(f"DEBUG: page.goto error: {e}")
             
-            # 1. Hide popups and cookie notices via CSS (most reliable way)
+            # 1. Aggressive CSS cleaning
             page.add_style_tag(content="""
                 .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
-                .modal-backdrop, .modal, div[id*='cookie'], div[class*='cookie'],
-                button[id*='cookie'], button[class*='cookie'],
-                .edu-popup, .popup-window { display: none !important; }
+                .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
+                .edu-popup, .popup-window, .edu-ad, #as-debug-window { display: none !important; }
+                body { background-color: white !important; }
             """)
             
-            # 2. Trigger potential lazy loading by scrolling
-            page.evaluate("window.scrollTo(0, 500)")
-            page.wait_for_timeout(1000)
-            page.evaluate("window.scrollTo(0, 0)")
+            # 2. Hard wait for JS to start rendering
+            page.wait_for_timeout(8000)
             
-            # 3. Wait for actual data (Edupage grid specific)
-            # We wait for the 'networkidle' after interactions
-            try:
-                page.wait_for_load_state("networkidle", timeout=10000)
-            except:
-                pass
+            # 3. Try to find the content in the main page OR any iframe
+            # Edupage sometimes nests the actual schedule
+            def find_timetable():
+                selectors = [
+                    '.timetable-grid', '.timetableContent', '.section.timetable-grid',
+                    '#main', 'table.main-table', 'table'
+                ]
+                
+                # Check main page
+                for s in selectors:
+                    el = page.query_selector(s)
+                    if el and el.is_visible():
+                        # Verify it has cells or content
+                        if len(page.query_selector_all(f"{s} .cell, {s} td")) > 2:
+                            return el
+                
+                # Check all frames
+                for frame in page.frames:
+                    if frame == page.main_frame: continue
+                    for s in selectors:
+                        try:
+                            el = frame.query_selector(s)
+                            if el and el.is_visible():
+                                if len(frame.query_selector_all(f"{s} .cell, {s} td")) > 2:
+                                    return el
+                        except: continue
+                return None
+
+            timetable = find_timetable()
             
-            # Add a final generous wait for stability
-            page.wait_for_timeout(5000)
-
-            # High-priority Edupage selectors
-            selectors = [
-                '.timetable-grid',
-                '.timetableContent',
-                'div[class*="timetable-grid"]',
-                '.section.timetable-grid',
-                '#main-content',
-                '#main',
-                'table'
-            ]
-
-            timetable = None
-            for selector in selectors:
-                try:
-                    # Check if visible and has content
-                    element = page.query_selector(selector)
-                    if element and element.is_visible():
-                        # Edupage specific: check if it has 'cell' children which mean data
-                        cells = page.query_selector_all(f"{selector} >> .cell")
-                        if len(cells) > 0 or selector == 'table':
-                            timetable = element
-                            break
-                except:
-                    continue
+            # 4. If not found, scroll and wait again
+            if not timetable:
+                page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+                page.wait_for_timeout(3000)
+                page.evaluate("window.scrollTo(0, 0)")
+                page.wait_for_timeout(2000)
+                timetable = find_timetable()
 
             if timetable:
-                # Optional: Zoom for readability
-                page.evaluate("document.body.style.zoom='1.1'")
+                # Take element screenshot
                 timetable.screenshot(path=file_path)
             else:
-                # If no specific element, take a shot of the upper-middle part of the page
-                # This usually contains the schedule even if selective capture fails
-                page.screenshot(path=file_path, clip={"x": 0, "y": 50, "width": 1280, "height": 800})
+                # Final fallback: Clip the main area where the timetable usually sits
+                # Many times the selector fails but the content is visually there
+                page.screenshot(path=file_path, clip={"x": 50, "y": 100, "width": 1200, "height": 600})
 
             browser.close()
 
