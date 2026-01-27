@@ -10,7 +10,7 @@ logging.basicConfig(
 
 class HemisAPI:
     def __init__(self):
-        self.base_url = "https://student.tsue.uz/rest/v1"
+        self.base_url = "https://hemis.tsue.uz/rest/v1"
         self.session = requests.Session()
 
     # ---------------- AUTH ----------------
