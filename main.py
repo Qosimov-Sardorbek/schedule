@@ -1609,6 +1609,7 @@ from playwright.sync_api import sync_playwright
 import tempfile
 
 def take_timetable_screenshot(guruh):
+    browser = None
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
         
@@ -1617,44 +1618,50 @@ def take_timetable_screenshot(guruh):
         file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page(viewport={"width": 1920, "height": 1080})
-            page.goto(url, timeout=60000)
+            browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            
+            # Go to URL with a shorter timeout
+            try:
+                page.goto(url, timeout=30000, wait_until="domcontentloaded")
+            except Exception as e:
+                print(f"DEBUG: page.goto failed or timed out: {e}")
+            
             # Short wait for any initial animations or loading
-            page.wait_for_timeout(3000)
+            page.wait_for_timeout(4000)
 
-            # Edupage jadval elementini topish (bir nechta variant)
+            # Edupage jadval elementini topish
             selectors = [
-                '.section',  # Edupage asosiy jadval konteyner
+                '.timetable-grid',
+                '.section',
                 '#main',
-                'div.main',
                 'div[class*="timetable"]',
                 '.timetableContent',
-                'table.main-table',
-                '.timetable-grid',
-                'table'  # Oxirgi variant
+                'table'
             ]
 
             timetable = None
             for selector in selectors:
-                try:
-                    timetable = page.wait_for_selector(selector, timeout=5000)
-                    if timetable:
-                        break
-                except:
-                    continue
+                timetable = page.query_selector(selector)
+                if timetable:
+                    break
 
             if timetable:
                 timetable.screenshot(path=file_path)
             else:
-                # Agar jadval topilmasa, butun sahifani olish
-                page.screenshot(path=file_path, full_page=True)
+                # Agar jadval topilmasa, butun sahifani olish (lekin chegaralangan holda)
+                page.screenshot(path=file_path)
 
             browser.close()
 
         return file_path, None
 
     except Exception as e:
+        if browser:
+            try:
+                browser.close()
+            except:
+                pass
         return None, str(e)
 
 
