@@ -1,20 +1,13 @@
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, InputFile
-from telegram.ext import (
-    Updater, CommandHandler, MessageHandler, CallbackQueryHandler, 
-    Filters, PicklePersistence
-)
+from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 from datetime import datetime
 import time
 import asyncio
 import os
-import tempfile
-from dotenv import load_dotenv
-from playwright.sync_api import sync_playwright
 
-load_dotenv()
-
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_USERNAME = "sqosimovv"
-BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class="
+BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class=*"
 
 STRINGS = {
     "uz": {
@@ -1575,125 +1568,141 @@ GROUPS_LIST = sorted(GROUP_IDS.keys())
 print(f"✅ {len(GROUP_IDS)} ta guruh ID yuklandi")
 
 
+from playwright.sync_api import sync_playwright
+
 def take_timetable_screenshot(guruh):
-    browser = None
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
-        temp_dir = tempfile.gettempdir()
-        file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
+        file_path = f"/tmp/{guruh}.png"
 
         with sync_playwright() as p:
-            # Railway compatible launch with stealth parameters
-            browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'])
-            context = browser.new_context(
-                viewport={"width": 1920, "height": 1080},
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
-            )
-            page = context.new_page()
-            
-            # Go to URL
-            page.goto(url, timeout=60000, wait_until="load")
-            
-            # 1. Aggressive CSS cleaning to reveal the content
-            page.add_style_tag(content="""
-                .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
-                .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
-                .edu-popup, .popup-window, .edu-ad, #as-debug-window { display: none !important; }
-                body { background-color: white !important; }
-            """)
-            
-            # 2. Hard wait for the grid to start appearing
-            page.wait_for_timeout(10000)
-            
-            # 3. Enhanced function to find the timetable in main page OR any iframe
-            def find_timetable():
-                inner_selectors = [
-                    '.timetable-grid', '.timetableContent', '.section.timetable-grid',
-                    '#main', 'table.main-table', 'table'
-                ]
-                
-                # Check main page
-                for s in inner_selectors:
-                    try:
-                        el = page.query_selector(s)
-                        if el and el.is_visible():
-                            # Minimum content check: looking for actual schedule cells
-                            if len(page.query_selector_all(f"{s} .cell, {s} td")) > 3:
-                                return el
-                    except: continue
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1920, "height": 1080})
+            page.goto(url, timeout=60000)
+            page.wait_for_timeout(5000)
 
-                # Check all frames (Edupage often nests the grid)
-                for frame in page.frames:
-                    for s in inner_selectors:
-                        try:
-                            el = frame.query_selector(s)
-                            if el and el.is_visible():
-                                if len(frame.query_selector_all(f"{s} .cell, {s} td")) > 3:
-                                    return el
-                        except: continue
-                return None
+            # Edupage jadval elementini topish (bir nechta variant)
+            selectors = [
+                '.section',  # Edupage asosiy jadval konteyner
+                '#main',
+                'div.main',
+                'div[class*="timetable"]',
+                '.timetableContent',
+                'table.main-table',
+                'table'  # Oxirgi variant
+            ]
 
-            timetable = find_timetable()
-            
-            # 4. Fallback if not found: try scrolling to trigger hydration
-            if not timetable:
-                page.evaluate("window.scrollBy(0, 300)")
-                page.wait_for_timeout(3000)
-                timetable = find_timetable()
+            timetable = None
+            for selector in selectors:
+                timetable = page.query_selector(selector)
+                if timetable:
+                    break
 
             if timetable:
                 timetable.screenshot(path=file_path)
             else:
-                # Absolute fallback: Capture the central region
-                page.screenshot(path=file_path, clip={"x": 50, "y": 150, "width": 1820, "height": 800})
+                # Agar jadval topilmasa, butun sahifani olish
+                page.screenshot(path=file_path, full_page=True)
 
             browser.close()
 
         return file_path, None
 
     except Exception as e:
-        if browser:
-            try: browser.close()
-            except: pass
         return None, str(e)
 
 
 def start(update, context):
-    """Start - initial greeting and lang check"""
+    """Start with language selection"""
     lang = context.user_data.get("lang")
     if not lang:
         return choose_language(update, context)
-    return main_menu(update, context)
 
-
-def main_menu(update, context):
-    """Main menu after language selection"""
-    lang = context.user_data.get("lang", "uz")
     s = STRINGS[lang]
-    
     keyboard = [
         [KeyboardButton(s["btn_bugun"]), KeyboardButton(s["btn_guruh"])],
         [KeyboardButton(s["btn_notif"]), KeyboardButton(s["btn_lang"])],
         [KeyboardButton(s["btn_yordam"])],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    
-    # Check if update is from callback or message
-    if update.callback_query:
-        msg = update.callback_query.message
-    else:
-        msg = update.message if update.message else update.effective_message
 
-    context.bot.send_message(
-        chat_id=msg.chat_id,
-        text=s["welcome"],
+    update.message.reply_text(
+        s["welcome"],
+        parse_mode="Markdown",
+        reply_markup=reply_markup,
+    )
+
+def notif_menu_handler(update, context):
+    """Notification settings menu"""
+    lang = context.user_data.get("lang", "uz")
+    s = STRINGS[lang]
+    is_enabled = context.user_data.get("notif_enabled", False)
+    status_text = s["notif_status_on"] if is_enabled else s["notif_status_off"]
+
+    keyboard = [
+        [KeyboardButton(s["btn_notif_on"]), KeyboardButton(s["btn_notif_off"])],
+        [KeyboardButton(s["btn_back"])]
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    update.message.reply_text(
+        s["notif_menu"].format(status_text),
         parse_mode="Markdown",
         reply_markup=reply_markup
     )
 
+def daily_notification_callback(context):
+    """Job callback to send daily schedules"""
+    job = context.job
+    chat_id = job.context['chat_id']
+    user_data = context.dispatcher.user_data.get(chat_id, {})
+
+    lang = user_data.get("lang", "uz")
+    guruh = user_data.get("guruh")
+    s = STRINGS[lang]
+
+    if not guruh:
+        return
+
+    filepath, error = take_timetable_screenshot(guruh)
+    if not error and filepath:
+        try:
+            kun = datetime.now().weekday()
+            # Skip Sunday
+            if kun == 6:
+                return
+
+            kun_nomi = s["days"][kun]
+            caption = s["today_caption"].format(guruh, kun_nomi, f"{BASE_URL}{GROUP_IDS[guruh]}")
+
+            with open(filepath, "rb") as photo:
+                context.bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode="Markdown")
+            os.remove(filepath)
+        except Exception:
+            pass
+
+def update_notification_job(chat_id, context, enable=True):
+    """Add or remove the notification job"""
+    job_name = f"daily_notif_{chat_id}"
+    current_jobs = context.job_queue.get_jobs_by_name(job_name)
+
+    for job in current_jobs:
+        job.schedule_removal()
+
+    if enable:
+        # Schedule daily at 08:00
+        from datetime import time as dt_time
+        target_time = dt_time(8, 0, 0)
+        context.job_queue.run_daily(
+            daily_notification_callback,
+            time=target_time,
+            days=(0, 1, 2, 3, 4, 5), # Mon-Sat
+            name=job_name,
+            context={"chat_id": chat_id}
+        )
 
 def choose_language(update, context):
-    """Language selection buttons"""
+    """Language selection menu"""
     keyboard = [
         [
             InlineKeyboardButton("🇺🇿 O'zbekcha", callback_data="lang_uz"),
@@ -1702,6 +1711,7 @@ def choose_language(update, context):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
+
     msg_text = STRINGS["uz"]["choose_lang"]
 
     if update.callback_query:
@@ -1709,18 +1719,61 @@ def choose_language(update, context):
     else:
         update.message.reply_text(msg_text, reply_markup=reply_markup)
 
+def guruh_tanlash(update, context):
+    """Guruhlar"""
+    lang = context.user_data.get("lang", "uz")
+    s = STRINGS[lang]
+    keyboard = []
+
+    # Mashhur guruhlar
+    popular = ["RST-88/25"]
+
+    for g in popular:
+        if g in GROUP_IDS:
+            keyboard.append([
+                InlineKeyboardButton(
+                    f"{g}",
+                    callback_data=f"g_{g}"
+                )
+            ])
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text(
+        s["select_group"],
+        reply_markup=reply_markup,
+        parse_mode="Markdown",
+    )
+
 
 def callback_handler(update, context):
-    """Inline button clicks"""
+    """Callback"""
     query = update.callback_query
     query.answer()
+
     data = query.data
 
     if data.startswith("lang_"):
         lang = data.split("_")[1]
         context.user_data["lang"] = lang
-        query.delete_message()
-        main_menu(update, context)
+        s = STRINGS[lang]
+
+        query.edit_message_text(s["lang_selected"])
+
+        # Show main menu
+        keyboard = [
+            [KeyboardButton(s["btn_bugun"]), KeyboardButton(s["btn_guruh"])],
+            [KeyboardButton(s["btn_yordam"]), KeyboardButton(s["btn_lang"])],
+            [KeyboardButton(s["btn_notif"]), KeyboardButton(s["btn_lang"])],
+            [KeyboardButton(s["btn_yordam"])],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text=s["welcome"],
+            parse_mode="Markdown",
+            reply_markup=reply_markup
+        )
 
     elif data.startswith("g_"):
         guruh = data[2:]
@@ -1733,24 +1786,8 @@ def callback_handler(update, context):
         )
 
 
-def guruh_tanlash(update, context):
-    """Fast group selection buttons"""
-    lang = context.user_data.get("lang", "uz")
-    s = STRINGS[lang]
-    # Popular/Shortcut groups
-    popular = ["RST-88/25"]
-    
-    keyboard = []
-    for g in popular:
-        if g in GROUP_IDS:
-            keyboard.append([InlineKeyboardButton(f"👥 {g}", callback_data=f"g_{g}")])
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text(s["select_group"], reply_markup=reply_markup, parse_mode="Markdown")
-
-
 def bugun_handler(update, context):
-    """Taking and sending screenshot for Today"""
+    """Bugungi darslar - RASM bilan"""
     lang = context.user_data.get("lang", "uz")
     s = STRINGS[lang]
     guruh = context.user_data.get("guruh")
@@ -1759,112 +1796,116 @@ def bugun_handler(update, context):
         update.message.reply_text(s["no_group"])
         return
 
+    if guruh not in GROUP_IDS:
+        update.message.reply_text(s["group_not_found"].format(guruh))
+        return
+
     msg = update.message.reply_text(s["taking_screenshot"])
+
+    # Screenshot olish
     filepath, error = take_timetable_screenshot(guruh)
 
     if error or not filepath:
-        msg.edit_text(s["error_screenshot"].format(error) + f"\n{BASE_URL}{GROUP_IDS[guruh]}")
+        msg.edit_text(
+            s["error_screenshot"].format(error) + f"\n{BASE_URL}{GROUP_IDS[guruh]}"
+        )
         return
 
     try:
         kun = datetime.now().weekday()
         kun_nomi = s["days"][kun]
-        caption = s["today_caption"].format(guruh, kun_nomi, f"{BASE_URL}{GROUP_IDS[guruh]}")
+
+        caption = s["today_caption"].format(
+            guruh,
+            kun_nomi,
+            f"{BASE_URL}{GROUP_IDS[guruh]}"
+        )
 
         with open(filepath, "rb") as photo:
-            update.message.reply_photo(photo=photo, caption=caption, parse_mode="Markdown")
+            update.message.reply_photo(
+                photo=photo,
+                caption=caption,
+                parse_mode="Markdown",
+            )
+
         msg.delete()
-        os.remove(filepath)
+
+        try:
+            os.remove(filepath)
+        except Exception:
+            pass
+
     except Exception as e:
         msg.edit_text(s["error_sending"].format(e))
 
 
-def notif_menu_handler(update, context):
-    """Notifications configuration"""
-    lang = context.user_data.get("lang", "uz")
-    s = STRINGS[lang]
-    is_enabled = context.user_data.get("notif_enabled", False)
-    status_text = s["notif_status_on"] if is_enabled else s["notif_status_off"]
-
-    keyboard = [
-        [KeyboardButton(s["btn_notif_on"]), KeyboardButton(s["btn_notif_off"])],
-        [KeyboardButton(s["btn_back"])]
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    update.message.reply_text(s["notif_menu"].format(status_text), parse_mode="Markdown", reply_markup=reply_markup)
-
-
-def daily_notification_callback(context):
-    """Auto job to send schedule"""
-    # Logic same as bugun_handler but silent
-    pass # To be fully implemented if specific logic is needed beyond re-using take_timetable_screenshot
-
-
-def update_notification_job(chat_id, context, enable=True):
-    """Schedule/Remove daily job"""
-    job_name = f"daily_notif_{chat_id}"
-    for job in context.job_queue.get_jobs_by_name(job_name):
-        job.schedule_removal()
-
-    if enable:
-        from datetime import time as dt_time
-        context.job_queue.run_daily(
-            # Simplified for brevity, usually calls take_timetable_screenshot
-            lambda c: None, 
-            time=dt_time(8, 0, 0),
-            name=job_name,
-            context={"chat_id": chat_id}
-        )
-
-
 def message_handler(update, context):
-    """Text-based interaction"""
+    """Messages"""
     text = update.message.text
     lang = context.user_data.get("lang", "uz")
     s = STRINGS[lang]
 
-    # Check button matches in all languages
-    all_btns = {
-        "bugun": [STRINGS[l]["btn_bugun"] for l in STRINGS],
-        "guruh": [STRINGS[l]["btn_guruh"] for l in STRINGS],
-        "notif": [STRINGS[l]["btn_notif"] for l in STRINGS],
-        "lang": [STRINGS[l]["btn_lang"] for l in STRINGS],
-        "yordam": [STRINGS[l]["btn_yordam"] for l in STRINGS],
-        "back": [STRINGS[l]["btn_back"] for l in STRINGS],
-        "notif_on": [STRINGS[l]["btn_notif_on"] for l in STRINGS],
-        "notif_off": [STRINGS[l]["btn_notif_off"] for l in STRINGS]
-    }
+    # Check buttons in all languages to be safe
+    all_bugun = [STRINGS[l]["btn_bugun"] for l in STRINGS]
+    all_guruh = [STRINGS[l]["btn_guruh"] for l in STRINGS]
+    all_yordam = [STRINGS[l]["btn_yordam"] for l in STRINGS]
+    all_lang = [STRINGS[l]["btn_lang"] for l in STRINGS]
+    all_notif = [STRINGS[l]["btn_notif"] for l in STRINGS]
+    all_notif_on = [STRINGS[l]["btn_notif_on"] for l in STRINGS]
+    all_notif_off = [STRINGS[l]["btn_notif_off"] for l in STRINGS]
+    all_back = [STRINGS[l]["btn_back"] for l in STRINGS]
 
-    if text in all_btns["bugun"]:
+    if text in all_bugun:
         bugun_handler(update, context)
-    elif text in all_btns["guruh"]:
+
+    elif text in all_guruh:
         guruh_tanlash(update, context)
-    elif text in all_btns["notif"]:
+
+    elif text in all_notif:
         notif_menu_handler(update, context)
-    elif text in all_btns["lang"]:
-        choose_language(update, context)
-    elif text in all_btns["yordam"]:
-        update.message.reply_text(s["help_text"], parse_mode="Markdown")
-    elif text in all_btns["back"]:
-        main_menu(update, context)
-    elif text in all_btns["notif_on"]:
+
+    elif text in all_notif_on:
         context.user_data["notif_enabled"] = True
+        update_notification_job(update.message.chat_id, context, enable=True)
         update.message.reply_text(s["notif_enabled"])
-        main_menu(update, context)
-    elif text in all_btns["notif_off"]:
+        start(update, context)
+
+    elif text in all_notif_off:
         context.user_data["notif_enabled"] = False
+        update_notification_job(update.message.chat_id, context, enable=False)
         update.message.reply_text(s["notif_disabled"])
-        main_menu(update, context)
+        start(update, context)
+
+    elif text in all_back:
+        start(update, context)
+
+    elif text in all_yordam:
+        update.message.reply_text(
+            s["help_text"],
+            parse_mode="Markdown",
+        )
+
+    elif text in all_lang:
+        choose_language(update, context)
+
     else:
-        # Check if it's a group name
+        # Guruh nomini tekshirish
         user_text = text.strip().upper()
+
         for g in GROUP_IDS.keys():
             if g.upper() == user_text:
                 context.user_data["guruh"] = g
-                update.message.reply_text(s["group_selected"].format(g), parse_mode="Markdown")
+                update.message.reply_text(
+                    s["group_selected"].format(g),
+                    parse_mode="Markdown",
+                )
                 return
-        # Default fallback
-        main_menu(update, context)
+
+        # Default welcome message if not a group
+        update.message.reply_text(
+            s["welcome"],
+            parse_mode="Markdown",
+        )
 
 
 def stats(update, context):
@@ -1925,24 +1966,6 @@ def broadcast(update, context):
         parse_mode="Markdown"
     )
 
-def restore_jobs(dp):
-    """Re-schedule jobs after reboot"""
-    for chat_id, u_data in dp.user_data.items():
-        if u_data.get("notif_enabled", False):
-            # Pass context-like object for update_notification_job which expects job_queue
-            # But context is usually passed in handlers. We just need dp.job_queue here.
-            pass # Simplified or properly implemented if needed. 
-            # Actually, update_notification_job expects (chat_id, context)
-            # We can use a helper or just do it here
-            job_name = f"daily_notif_{chat_id}"
-            from datetime import time as dt_time
-            dp.job_queue.run_daily(
-                daily_notification_callback,
-                time=dt_time(8, 0, 0),
-                days=(0, 1, 2, 3, 4, 5),
-                name=job_name,
-                context={"chat_id": chat_id}
-            )
 
 
 def main():
@@ -1955,13 +1978,27 @@ def main():
     from telegram.ext import PicklePersistence
     persistence = PicklePersistence(filename='bot_data.pickle')
 
-    bot_token = os.getenv("BOT_TOKEN")
-    if not bot_token:
-        print("❌ ERROR: BOT_TOKEN not found!")
-        return
-
-    updater = Updater(bot_token, use_context=True, persistence=persistence)
+    updater = Updater(BOT_TOKEN, use_context=True, persistence=persistence)
     dp = updater.dispatcher
+
+    # Restart jobs for users who have them enabled
+    job_queue = updater.job_queue
+    def restore_jobs(dispatcher):
+        chat_ids = dispatcher.user_data.keys()
+        for chat_id in chat_ids:
+            u_data = dispatcher.user_data.get(chat_id, {})
+            if u_data.get("notif_enabled", False):
+                # Manual job reconstruction since objects aren't persisted well
+                job_name = f"daily_notif_{chat_id}"
+                from datetime import time as dt_time
+                target_time = dt_time(8, 0, 0)
+                job_queue.run_daily(
+                    daily_notification_callback,
+                    time=target_time,
+                    days=(0, 1, 2, 3, 4, 5),
+                    name=job_name,
+                    context={"chat_id": chat_id}
+                )
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("stats", stats))
