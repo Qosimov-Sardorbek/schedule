@@ -1618,52 +1618,76 @@ def take_timetable_screenshot(guruh):
         with sync_playwright() as p:
             # Launch with specific arguments for reliability on Linux
             browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-            page = browser.new_page(viewport={"width": 1280, "height": 900})
             
-            # Go to URL and wait until network is mostly idle
+            # Use a slightly larger viewport and older user agent for better compatibility
+            context = browser.new_context(
+                viewport={"width": 1440, "height": 1080},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            )
+            page = context.new_page()
+            
+            # Go to URL
             try:
-                page.goto(url, timeout=30000, wait_until="networkidle")
+                page.goto(url, timeout=45000, wait_until="load")
             except Exception as e:
-                print(f"DEBUG: page.goto timeout/error (continuing): {e}")
+                print(f"DEBUG: page.goto error: {e}")
             
-            # Dismiss cookie consent if it appears (common on Edupage)
+            # 1. Hide popups and cookie notices via CSS (most reliable way)
+            page.add_style_tag(content="""
+                .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
+                .modal-backdrop, .modal, div[id*='cookie'], div[class*='cookie'],
+                button[id*='cookie'], button[class*='cookie'],
+                .edu-popup, .popup-window { display: none !important; }
+            """)
+            
+            # 2. Trigger potential lazy loading by scrolling
+            page.evaluate("window.scrollTo(0, 500)")
+            page.wait_for_timeout(1000)
+            page.evaluate("window.scrollTo(0, 0)")
+            
+            # 3. Wait for actual data (Edupage grid specific)
+            # We wait for the 'networkidle' after interactions
             try:
-                cookie_btn = page.query_selector('button:has-text("OK"), .cc-btn.cc-dismiss')
-                if cookie_btn:
-                    cookie_btn.click()
-                    page.wait_for_timeout(500)
+                page.wait_for_load_state("networkidle", timeout=10000)
             except:
                 pass
+            
+            # Add a final generous wait for stability
+            page.wait_for_timeout(5000)
 
-            # Wait for any of the timetable elements to have children or be visible
-            # Edupage often takes a few seconds to 'draw' the actual grid
-            page.wait_for_timeout(6000)
-
-            # Edupage selectors
+            # High-priority Edupage selectors
             selectors = [
                 '.timetable-grid',
-                '.section.timetable-grid',
                 '.timetableContent',
+                'div[class*="timetable-grid"]',
+                '.section.timetable-grid',
+                '#main-content',
                 '#main',
-                'div[class*="timetable"]',
                 'table'
             ]
 
             timetable = None
             for selector in selectors:
-                timetable = page.query_selector(selector)
-                if timetable:
-                    # Check if it has some content
-                    if len(page.query_selector_all(f"{selector} >> .cell")) > 0 or selector == 'table':
-                        break
+                try:
+                    # Check if visible and has content
+                    element = page.query_selector(selector)
+                    if element and element.is_visible():
+                        # Edupage specific: check if it has 'cell' children which mean data
+                        cells = page.query_selector_all(f"{selector} >> .cell")
+                        if len(cells) > 0 or selector == 'table':
+                            timetable = element
+                            break
+                except:
+                    continue
 
             if timetable:
-                # Zoom a bit for better readability
-                page.evaluate("document.body.style.zoom='1.2'")
+                # Optional: Zoom for readability
+                page.evaluate("document.body.style.zoom='1.1'")
                 timetable.screenshot(path=file_path)
             else:
-                # Fallback to full page screenshot
-                page.screenshot(path=file_path)
+                # If no specific element, take a shot of the upper-middle part of the page
+                # This usually contains the schedule even if selective capture fails
+                page.screenshot(path=file_path, clip={"x": 0, "y": 50, "width": 1280, "height": 800})
 
             browser.close()
 
