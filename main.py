@@ -13,8 +13,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # HEMIS imports
 from hemis_handlers import (
@@ -2091,8 +2089,13 @@ def main():
     print("� HEMIS integratsiyasi")
     print("============================================================")
 
+    bot_token = os.getenv("BOT_TOKEN")
+    if not bot_token:
+        print("❌ XATOLIK: BOT_TOKEN topilmadi! Railway Variables bo'limini tekshiring.")
+        return
+
     persistence = PicklePersistence(filename='bot_data.pickle')
-    updater = Updater(BOT_TOKEN, use_context=True, persistence=persistence)
+    updater = Updater(bot_token, use_context=True, persistence=persistence)
     dp = updater.dispatcher
 
     # Restart jobs for users who have them enabled
