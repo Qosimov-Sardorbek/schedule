@@ -1616,25 +1616,36 @@ def take_timetable_screenshot(guruh):
         file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
 
         with sync_playwright() as p:
+            # Launch with specific arguments for reliability on Linux
             browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            page = browser.new_page(viewport={"width": 1280, "height": 900})
             
-            # Go to URL with a shorter timeout
+            # Go to URL and wait until network is mostly idle
             try:
-                page.goto(url, timeout=30000, wait_until="domcontentloaded")
+                page.goto(url, timeout=30000, wait_until="networkidle")
             except Exception as e:
-                print(f"DEBUG: page.goto failed or timed out: {e}")
+                print(f"DEBUG: page.goto timeout/error (continuing): {e}")
             
-            # Short wait for any initial animations or loading
-            page.wait_for_timeout(4000)
+            # Dismiss cookie consent if it appears (common on Edupage)
+            try:
+                cookie_btn = page.query_selector('button:has-text("OK"), .cc-btn.cc-dismiss')
+                if cookie_btn:
+                    cookie_btn.click()
+                    page.wait_for_timeout(500)
+            except:
+                pass
 
-            # Edupage jadval elementini topish
+            # Wait for any of the timetable elements to have children or be visible
+            # Edupage often takes a few seconds to 'draw' the actual grid
+            page.wait_for_timeout(6000)
+
+            # Edupage selectors
             selectors = [
                 '.timetable-grid',
-                '.section',
+                '.section.timetable-grid',
+                '.timetableContent',
                 '#main',
                 'div[class*="timetable"]',
-                '.timetableContent',
                 'table'
             ]
 
@@ -1642,12 +1653,16 @@ def take_timetable_screenshot(guruh):
             for selector in selectors:
                 timetable = page.query_selector(selector)
                 if timetable:
-                    break
+                    # Check if it has some content
+                    if len(page.query_selector_all(f"{selector} >> .cell")) > 0 or selector == 'table':
+                        break
 
             if timetable:
+                # Zoom a bit for better readability
+                page.evaluate("document.body.style.zoom='1.2'")
                 timetable.screenshot(path=file_path)
             else:
-                # Agar jadval topilmasa, butun sahifani olish (lekin chegaralangan holda)
+                # Fallback to full page screenshot
                 page.screenshot(path=file_path)
 
             browser.close()
