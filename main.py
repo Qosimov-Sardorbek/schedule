@@ -5,9 +5,14 @@ import time
 import asyncio
 import os
 
+import tempfile
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_USERNAME = "sqosimovv"
-BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class=*"
+BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class="
 
 STRINGS = {
     "uz": {
@@ -1571,44 +1576,90 @@ print(f"✅ {len(GROUP_IDS)} ta guruh ID yuklandi")
 from playwright.sync_api import sync_playwright
 
 def take_timetable_screenshot(guruh):
+    browser = None
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
-        file_path = f"/tmp/{guruh}.png"
+        
+        # Use platform-independent temp directory
+        temp_dir = tempfile.gettempdir()
+        file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page(viewport={"width": 1920, "height": 1080})
-            page.goto(url, timeout=60000)
-            page.wait_for_timeout(5000)
+            # Launch with Sandbox fixed for Railway
+            browser = p.chromium.launch(
+                headless=True, 
+                args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+            )
+            context = browser.new_context(
+                viewport={"width": 1920, "height": 1080},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+            )
+            page = context.new_page()
+            
+            # Navigate
+            page.goto(url, timeout=60000, wait_until="load")
+            
+            # Hide popups/cookies that block the view
+            page.add_style_tag(content="""
+                .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
+                .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
+                .edu-popup, .popup-window, .edu-ad, #as-debug-window { display: none !important; }
+            """)
+            
+            # Wait for rendering
+            page.wait_for_timeout(10000)
+            
+            # Search logic for the grid (Main + Frames)
+            def find_timetable():
+                inner_selectors = [
+                    '.timetable-grid', '.timetableContent', '.section.timetable-grid',
+                    '#main', 'table.main-table', 'table'
+                ]
+                
+                # Check main page
+                for s in inner_selectors:
+                    try:
+                        el = page.query_selector(s)
+                        if el and el.is_visible():
+                            # Check if it actually contains cells
+                            if len(page.query_selector_all(f"{s} .cell, {s} td")) > 3:
+                                return el
+                    except: continue
 
-            # Edupage jadval elementini topish (bir nechta variant)
-            selectors = [
-                '.section',  # Edupage asosiy jadval konteyner
-                '#main',
-                'div.main',
-                'div[class*="timetable"]',
-                '.timetableContent',
-                'table.main-table',
-                'table'  # Oxirgi variant
-            ]
+                # Check frames
+                for frame in page.frames:
+                    for s in inner_selectors:
+                        try:
+                            el = frame.query_selector(s)
+                            if el and el.is_visible():
+                                if len(frame.query_selector_all(f"{s} .cell, {s} td")) > 3:
+                                    return el
+                        except: continue
+                return None
 
-            timetable = None
-            for selector in selectors:
-                timetable = page.query_selector(selector)
-                if timetable:
-                    break
-
+            timetable = find_timetable()
+            
             if timetable:
                 timetable.screenshot(path=file_path)
             else:
-                # Agar jadval topilmasa, butun sahifani olish
-                page.screenshot(path=file_path, full_page=True)
+                # Scroll a bit and try one last time
+                page.evaluate("window.scrollBy(0, 400)")
+                page.wait_for_timeout(3000)
+                timetable = find_timetable()
+                if timetable:
+                    timetable.screenshot(path=file_path)
+                else:
+                    # Final fallback capture
+                    page.screenshot(path=file_path, clip={"x": 50, "y": 150, "width": 1820, "height": 800})
 
             browser.close()
 
         return file_path, None
 
     except Exception as e:
+        if browser:
+            try: browser.close()
+            except: pass
         return None, str(e)
 
 
