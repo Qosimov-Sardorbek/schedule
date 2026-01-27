@@ -591,3 +591,1061 @@ Traceback (most recent call last):
   File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 261, in _request_wrapper
     raise TimedOut() from error
 telegram.error.TimedOut: Timed out
+2026-01-22 16:34:16,162 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:16,169 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:20,272 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:20,272 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:21,609 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:21,609 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:26,216 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:26,217 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:28,248 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:28,267 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:33,634 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:33,635 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:35,988 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:35,988 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:39,469 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:39,469 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:42,956 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:42,956 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:48,155 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:48,156 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:53,804 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:34:53,804 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:03,898 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:03,899 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:11,613 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:11,613 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:15,724 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:15,724 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:27,219 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:27,220 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:31,748 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:31,749 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:48,947 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:48,947 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:53,729 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:35:53,730 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:36:19,472 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:36:19,475 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:36:23,597 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:36:23,598 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:37:02,145 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:37:02,145 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:37:06,273 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:37:06,274 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:37:36,387 | ERROR | Error while getting Updates: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-01-22 16:37:36,387 | ERROR | No error handlers are registered, logging exception.
+Traceback (most recent call last):
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 651, in _network_loop_retry
+    if not action_cb():
+           ~~~~~~~~~^^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\updater.py", line 602, in polling_action_cb
+    updates = self.bot.get_updates(
+        self.last_update_id,
+    ...<2 lines>...
+        allowed_updates=allowed_updates,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\ext\extbot.py", line 228, in get_updates
+    updates = super().get_updates(
+        offset=offset,
+    ...<4 lines>...
+        api_kwargs=api_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 134, in decorator
+    result = func(*args, **kwargs)
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 3140, in get_updates
+    self._post(
+    ~~~~~~~~~~^
+        'getUpdates',
+        ^^^^^^^^^^^^^
+    ...<2 lines>...
+        api_kwargs=api_kwargs,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ),
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\bot.py", line 299, in _post
+    return self.request.post(
+           ~~~~~~~~~~~~~~~~~^
+        f'{self.base_url}/{endpoint}', data=data, timeout=effective_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 361, in post
+    result = self._request_wrapper(
+        'POST',
+    ...<3 lines>...
+        **urlopen_kwargs,
+    )
+  File "C:\Users\Sardorbek Qosimov\AppData\Local\Programs\Python\Python313\Lib\site-packages\telegram\utils\request.py", line 283, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running

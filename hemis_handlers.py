@@ -34,6 +34,23 @@ HEMIS_STRINGS = {
         "login_failed": "❌ Login yoki parol xato",
         "not_logged": "⚠️ Avval HEMIS ga kiring",
         "logout": "🚪 Tizimdan chiqdingiz"
+    },
+    "en": {
+        "hemis_main": "🎓 *HEMIS System*\n\nPlease select a section:",
+        "btn_login": "🔐 login",
+        "btn_my_info": "👤 My Information",
+        "btn_subjects": "📚 Subjects",
+        "btn_grades": "📊 Grades",
+        "btn_attendance": "📅 Attendance",
+        "btn_schedule": "🕐 Timetable",
+        "btn_payment": "💳 Payment Info",
+        "btn_logout": "🚪 Logout",
+        "login_prompt": "🔐 Enter *HEMIS login (ID)*:",
+        "password_prompt": "🔑 *Enter password:*",
+        "loading": "⏳ Loading...",
+        "login_failed": "❌ Invalid login or password",
+        "not_logged": "⚠️ Please login to HEMIS first",
+        "logout": "🚪 You have logged out"
     }
 }
 

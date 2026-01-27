@@ -5,14 +5,15 @@ from telegram.ext import (
 )
 from datetime import datetime
 import time
+import asyncio
 import os
-import tempfile
 from dotenv import load_dotenv
 
 
 load_dotenv()
 
 
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # HEMIS imports
@@ -26,7 +27,7 @@ from hemis_handlers import (
 
 
 ADMIN_USERNAME = "sqosimovv"
-BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class=*"
+BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class="
 
 
 
@@ -1605,18 +1606,22 @@ print(f"✅ {len(GROUP_IDS)} ta guruh ID yuklandi")
 
 from playwright.sync_api import sync_playwright
 
+import tempfile
+
 def take_timetable_screenshot(guruh):
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
-        # Windowsda va Linuxda mos tushadigan vaqtinchalik yo'l
+        
+        # Use a platform-independent temporary directory
         temp_dir = tempfile.gettempdir()
-        file_path = os.path.join(temp_dir, f"{guruh}.png")
+        file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1920, "height": 1080})
             page.goto(url, timeout=60000)
-            page.wait_for_timeout(5000)
+            # Short wait for any initial animations or loading
+            page.wait_for_timeout(3000)
 
             # Edupage jadval elementini topish (bir nechta variant)
             selectors = [
@@ -1626,14 +1631,18 @@ def take_timetable_screenshot(guruh):
                 'div[class*="timetable"]',
                 '.timetableContent',
                 'table.main-table',
+                '.timetable-grid',
                 'table'  # Oxirgi variant
             ]
 
             timetable = None
             for selector in selectors:
-                timetable = page.query_selector(selector)
-                if timetable:
-                    break
+                try:
+                    timetable = page.wait_for_selector(selector, timeout=5000)
+                    if timetable:
+                        break
+                except:
+                    continue
 
             if timetable:
                 timetable.screenshot(path=file_path)
@@ -1656,6 +1665,12 @@ def start(update, context):
 
 def main_menu(update, context):
     """Main Menu: Timetable vs HEMIS"""
+    # Safe check for callback query
+    if hasattr(update, 'callback_query') and update.callback_query:
+        message = update.callback_query.message
+    else:
+        message = update.message if hasattr(update, 'message') else update
+
     lang = context.user_data.get("lang", "uz")
     s = STRINGS[lang]
     
@@ -1664,18 +1679,12 @@ def main_menu(update, context):
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
-    if update.callback_query:
-        update.callback_query.message.reply_text(
-            s["welcome"],
-            parse_mode="Markdown",
-            reply_markup=reply_markup
-        )
-    else:
-        update.message.reply_text(
-            s["welcome"],
-            parse_mode="Markdown",
-            reply_markup=reply_markup
-        )
+    context.bot.send_message(
+        chat_id=message.chat_id,
+        text=s["welcome"],
+        parse_mode="Markdown",
+        reply_markup=reply_markup
+    )
 
 def timetable_menu(update, context):
     """Timetable Menu"""
@@ -1782,7 +1791,24 @@ def choose_language(update, context):
     else:
         update.message.reply_text(msg_text, reply_markup=reply_markup)
 
-# Removed duplicate main_menu and timetable_menu definitions
+
+def timetable_menu(update, context):
+    """Timetable Menu"""
+    lang = context.user_data.get("lang", "uz")
+    s = STRINGS[lang]
+    
+    keyboard = [
+        [KeyboardButton(s["btn_bugun"]), KeyboardButton(s["btn_guruh"])],
+        [KeyboardButton(s["btn_notif"]), KeyboardButton(s["btn_lang"])],
+        [KeyboardButton(s["btn_yordam"]), KeyboardButton(s["btn_back"])],
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    
+    update.message.reply_text(
+        s["timetable_menu_text"],
+        parse_mode="Markdown",
+        reply_markup=reply_markup
+    )
 
 def guruh_tanlash(update, context):
     """Guruhlar"""
