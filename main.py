@@ -1580,45 +1580,72 @@ def take_timetable_screenshot(guruh):
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
         temp_dir = tempfile.gettempdir()
-        file_path = os.path.join(temp_dir, f"{guruh}.png")
+        file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
 
         with sync_playwright() as p:
-            # Railway compatible launch
-            browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-            page = browser.new_page(
+            # Railway compatible launch with stealth parameters
+            browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'])
+            context = browser.new_context(
                 viewport={"width": 1920, "height": 1080},
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
             )
+            page = context.new_page()
             
-            # Go to URL and wait precisely as per user's logic style
-            page.goto(url, timeout=60000)
-            page.wait_for_timeout(8000) # 8 seconds for stability
+            # Go to URL
+            page.goto(url, timeout=60000, wait_until="load")
+            
+            # 1. Aggressive CSS cleaning to reveal the content
+            page.add_style_tag(content="""
+                .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
+                .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
+                .edu-popup, .popup-window, .edu-ad, #as-debug-window { display: none !important; }
+                body { background-color: white !important; }
+            """)
+            
+            # 2. Hard wait for the grid to start appearing
+            page.wait_for_timeout(10000)
+            
+            # 3. Enhanced function to find the timetable in main page OR any iframe
+            def find_timetable():
+                inner_selectors = [
+                    '.timetable-grid', '.timetableContent', '.section.timetable-grid',
+                    '#main', 'table.main-table', 'table'
+                ]
+                
+                # Check main page
+                for s in inner_selectors:
+                    try:
+                        el = page.query_selector(s)
+                        if el and el.is_visible():
+                            # Minimum content check: looking for actual schedule cells
+                            if len(page.query_selector_all(f"{s} .cell, {s} td")) > 3:
+                                return el
+                    except: continue
 
-            # User's requested selectors
-            selectors = [
-                '.section', 
-                '#main',
-                'div.main',
-                'div[class*="timetable"]',
-                '.timetableContent',
-                'table.main-table',
-                'table'
-            ]
+                # Check all frames (Edupage often nests the grid)
+                for frame in page.frames:
+                    for s in inner_selectors:
+                        try:
+                            el = frame.query_selector(s)
+                            if el and el.is_visible():
+                                if len(frame.query_selector_all(f"{s} .cell, {s} td")) > 3:
+                                    return el
+                        except: continue
+                return None
 
-            timetable = None
-            for selector in selectors:
-                try:
-                    timetable = page.query_selector(selector)
-                    if timetable:
-                        break
-                except:
-                    continue
+            timetable = find_timetable()
+            
+            # 4. Fallback if not found: try scrolling to trigger hydration
+            if not timetable:
+                page.evaluate("window.scrollBy(0, 300)")
+                page.wait_for_timeout(3000)
+                timetable = find_timetable()
 
             if timetable:
                 timetable.screenshot(path=file_path)
             else:
-                # User's fallback logic
-                page.screenshot(path=file_path, full_page=True)
+                # Absolute fallback: Capture the central region
+                page.screenshot(path=file_path, clip={"x": 50, "y": 150, "width": 1820, "height": 800})
 
             browser.close()
 
