@@ -1579,85 +1579,46 @@ def take_timetable_screenshot(guruh):
     browser = None
     try:
         url = f"{BASE_URL}{GROUP_IDS[guruh]}"
-        
-        # Use a platform-independent temporary directory
         temp_dir = tempfile.gettempdir()
-        file_path = os.path.join(temp_dir, f"{guruh}_{int(time.time())}.png")
+        file_path = os.path.join(temp_dir, f"{guruh}.png")
 
         with sync_playwright() as p:
-            # Launch with specific arguments
+            # Railway compatible launch
             browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-            
-            # Use a 1920x1080 viewport as requested by the user
-            context = browser.new_context(
+            page = browser.new_page(
                 viewport={"width": 1920, "height": 1080},
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
             )
-            page = context.new_page()
             
-            # Go to URL with a longer timeout
-            try:
-                page.goto(url, timeout=90000, wait_until="load")
-            except Exception as e:
-                print(f"DEBUG: page.goto error: {e}")
-            
-            # Wait for content to load dynamically
-            page.wait_for_timeout(5000)
-            
-            # 1. Hide intrusive elements
-            page.add_style_tag(content="""
-                .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
-                .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
-                .edu-popup, .popup-window, .edu-ad, #as-debug-window { display: none !important; }
-            """)
+            # Go to URL and wait precisely as per user's logic style
+            page.goto(url, timeout=60000)
+            page.wait_for_timeout(8000) # 8 seconds for stability
 
-            # 2. Try to scroll to trigger any lazy loading
-            page.evaluate("window.scrollBy(0, 500)")
-            page.wait_for_timeout(2000)
-            page.evaluate("window.scrollTo(0, 0)")
-            page.wait_for_timeout(2000)
-            
-            # 3. Find content in main page OR iframes
-            def find_timetable():
-                inner_selectors = [
-                    '.timetable-grid', '.timetableContent', '.section.timetable-grid',
-                    '#main', 'table.main-table', 'table'
-                ]
-                # Check main page
-                for s in inner_selectors:
-                    try:
-                        el = page.query_selector(s)
-                        if el and el.is_visible():
-                            # Minimum content check
-                            cells = page.query_selector_all(f"{s} .cell, {s} td")
-                            if len(cells) > 5:
-                                return el
-                    except: continue
+            # User's requested selectors
+            selectors = [
+                '.section', 
+                '#main',
+                'div.main',
+                'div[class*="timetable"]',
+                '.timetableContent',
+                'table.main-table',
+                'table'
+            ]
 
-                # Check frames
-                for frame in page.frames:
-                    for s in inner_selectors:
-                        try:
-                            el = frame.query_selector(s)
-                            if el and el.is_visible():
-                                cells = frame.query_selector_all(f"{s} .cell, {s} td")
-                                if len(cells) > 5:
-                                    return el
-                        except: continue
-                return None
-
-            timetable = find_timetable()
-            
-            # 4. Try waiting one more time if not found
-            if not timetable:
-                page.wait_for_timeout(5000)
-                timetable = find_timetable()
+            timetable = None
+            for selector in selectors:
+                try:
+                    timetable = page.query_selector(selector)
+                    if timetable:
+                        break
+                except:
+                    continue
 
             if timetable:
                 timetable.screenshot(path=file_path)
             else:
-                # Final fallback: Capture a large area where the timetable usually is
-                page.screenshot(path=file_path, clip={"x": 50, "y": 150, "width": 1800, "height": 850})
+                # User's fallback logic
+                page.screenshot(path=file_path, full_page=True)
 
             browser.close()
 
