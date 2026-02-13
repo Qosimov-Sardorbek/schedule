@@ -1629,12 +1629,10 @@ def take_timetable_screenshot(guruh):
             )
             page = context.new_page()
             
-            # Navigate to print view for cleaner shot if possible, or just view.php
-            # Assuming view.php is the target
-            page.goto(url, timeout=90000, wait_until="networkidle") # Wait for network idle
+            # 1-URINISH: Oddiy ko'rinish
+            page.goto(url, timeout=60000, wait_until="domcontentloaded")
             
-            # Hide popups/cookies that block the view
-            # Also hide footer to avoid clutter
+            # Hide popups
             page.add_style_tag(content="""
                 .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
                 .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
@@ -1642,25 +1640,39 @@ def take_timetable_screenshot(guruh):
                 footer, .footer, #footer { display: none !important; }
             """)
             
-            # Wait for any of these key elements
+            # Wait a bit for JS to render
             try:
-                page.wait_for_selector(".timetable-container, .timetable-grid, table.main-table", timeout=20000)
+                page.wait_for_selector(".timetable-container, .timetable-grid, table.main-table, #main", timeout=15000)
             except:
-                pass
-            
-            # Try to capture the main content area
-            # Priority: .timetable-container -> #main -> body
+                print("⚠️ 1-urinishda jadval topilmadi, print versiyaga o'tilmoqda san...")
+
+            # Elementni qidirish
             element = page.query_selector(".timetable-container")
-            if not element:
-                element = page.query_selector("div.timetable-grid")
-            if not element:
-                element = page.query_selector("#main")
-            
+            if not element: element = page.query_selector("div.timetable-grid")
+            if not element: element = page.query_selector("#main")
+
             if element:
                 element.screenshot(path=file_path)
             else:
-                 # Fallback: Capture full page if specific element not found
-                page.screenshot(path=file_path, full_page=True)
+                # 2-URINISH: Print versiya
+                print_url = url + "&print=1"
+                page.goto(print_url, timeout=60000, wait_until="networkidle")
+                
+                try:
+                     page.wait_for_selector(".timetable-container, .timetable-grid, table", timeout=15000)
+                except:
+                    pass
+                
+                # Print versiyada odatda jadval to'liq ko'rinadi
+                # Eng katta elementni topishga harakat qilamiz yoki full_screen
+                element = page.query_selector(".timetable-container")
+                if not element: element = page.query_selector(".timetable-grid")
+                
+                if element:
+                    element.screenshot(path=file_path)
+                else:
+                    # Agar baribir topilmasa, butun sahifani olamiz
+                    page.screenshot(path=file_path, full_page=True)
 
             browser.close()
 
