@@ -10,4 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run the bot
+EXPOSE 7860
 CMD ["python", "main.py"]

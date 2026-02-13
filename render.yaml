@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: tsue-schedule-bot
+    env: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: BOT_TOKEN
+        sync: false

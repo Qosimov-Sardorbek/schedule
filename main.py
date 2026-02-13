@@ -10,9 +10,42 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip() # Avtomatik bo'sh joylarni o'chirish
+if not BOT_TOKEN:
+    print("❌ XATOLIK: BOT_TOKEN topilmadi! .env yoki Secrets ni tekshiring.")
+    exit(1)
+
+# Debug: DNS configuration
+try:
+    with open("/etc/resolv.conf", "r") as f:
+        print(f"🔧 DNS Config (/etc/resolv.conf):\n{f.read()}")
+except Exception as e:
+    print(f"⚠️ DNS Config o'qilmadi: {e}")
+
 ADMIN_USERNAME = "sqosimovv"
 BASE_URL = "https://tsue.edupage.org/timetable/view.php?num=90&class="
+
+# -------------------------------------------------------------------------------------
+# WEB SERVER QISMI (Render.com uchun)
+# -------------------------------------------------------------------------------------
+from flask import Flask
+from threading import Thread
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot ishlamoqda! (TSUE Schedule Bot)"
+
+def run_web_server():
+    # Render.com avtomatik PORT o'zgaruvchisini beradi (odatda 10000)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+# Serverni alohida oqimda (thread) ishga tushiramiz
+t = Thread(target=run_web_server)
+t.start()
+# -------------------------------------------------------------------------------------
 
 STRINGS = {
     "uz": {
@@ -2059,6 +2092,22 @@ def main():
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, message_handler))
 
     print("✅ Ishga tushdi!")
+
+    # -------------------------------------------------------------------------------------
+    # DIAGNOSTIKA (Network Check)
+    # -------------------------------------------------------------------------------------
+    import socket
+    import requests
+    try:
+        print("🔍 Tarmoq tekshirilmoqda...")
+        ip = socket.gethostbyname("api.telegram.org")
+        print(f"✅ DNS OK: api.telegram.org -> {ip}")
+        
+        response = requests.get("https://api.telegram.org", timeout=5)
+        print(f"✅ HTTP OK: {response.status_code}")
+    except Exception as e:
+        print(f"❌ TARMOQ XATOSI: {e}")
+    # -------------------------------------------------------------------------------------
 
     # Restore jobs after start
     restore_jobs(dp)
