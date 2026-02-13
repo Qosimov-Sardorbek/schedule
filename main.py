@@ -1629,61 +1629,38 @@ def take_timetable_screenshot(guruh):
             )
             page = context.new_page()
             
-            # Navigate
-            page.goto(url, timeout=60000, wait_until="load")
+            # Navigate to print view for cleaner shot if possible, or just view.php
+            # Assuming view.php is the target
+            page.goto(url, timeout=90000, wait_until="networkidle") # Wait for network idle
             
             # Hide popups/cookies that block the view
+            # Also hide footer to avoid clutter
             page.add_style_tag(content="""
                 .cc-window, .cc-banner, .cc-overlay, #cookie-nav, .cookie-notice, 
                 .modal-backdrop, .modal, [id*='cookie'], [class*='cookie'],
-                .edu-popup, .popup-window, .edu-ad, #as-debug-window { display: none !important; }
+                .edu-popup, .popup-window, .edu-ad, #as-debug-window,
+                footer, .footer, #footer { display: none !important; }
             """)
             
-            # Wait for rendering
-            page.wait_for_timeout(10000)
+            # Wait for any of these key elements
+            try:
+                page.wait_for_selector(".timetable-container, .timetable-grid, table.main-table", timeout=20000)
+            except:
+                pass
             
-            # Search logic for the grid (Main + Frames)
-            def find_timetable():
-                inner_selectors = [
-                    '.timetable-grid', '.timetableContent', '.section.timetable-grid',
-                    '#main', 'table.main-table', 'table'
-                ]
-                
-                # Check main page
-                for s in inner_selectors:
-                    try:
-                        el = page.query_selector(s)
-                        if el and el.is_visible():
-                            # Check if it actually contains cells
-                            if len(page.query_selector_all(f"{s} .cell, {s} td")) > 3:
-                                return el
-                    except: continue
-
-                # Check frames
-                for frame in page.frames:
-                    for s in inner_selectors:
-                        try:
-                            el = frame.query_selector(s)
-                            if el and el.is_visible():
-                                if len(frame.query_selector_all(f"{s} .cell, {s} td")) > 3:
-                                    return el
-                        except: continue
-                return None
-
-            timetable = find_timetable()
+            # Try to capture the main content area
+            # Priority: .timetable-container -> #main -> body
+            element = page.query_selector(".timetable-container")
+            if not element:
+                element = page.query_selector("div.timetable-grid")
+            if not element:
+                element = page.query_selector("#main")
             
-            if timetable:
-                timetable.screenshot(path=file_path)
+            if element:
+                element.screenshot(path=file_path)
             else:
-                # Scroll a bit and try one last time
-                page.evaluate("window.scrollBy(0, 400)")
-                page.wait_for_timeout(3000)
-                timetable = find_timetable()
-                if timetable:
-                    timetable.screenshot(path=file_path)
-                else:
-                    # Final fallback capture
-                    page.screenshot(path=file_path, clip={"x": 50, "y": 150, "width": 1820, "height": 800})
+                 # Fallback: Capture full page if specific element not found
+                page.screenshot(path=file_path, full_page=True)
 
             browser.close()
 
@@ -1847,7 +1824,6 @@ def callback_handler(update, context):
         # Show main menu
         keyboard = [
             [KeyboardButton(s["btn_bugun"]), KeyboardButton(s["btn_guruh"])],
-            [KeyboardButton(s["btn_yordam"]), KeyboardButton(s["btn_lang"])],
             [KeyboardButton(s["btn_notif"]), KeyboardButton(s["btn_lang"])],
             [KeyboardButton(s["btn_yordam"])],
         ]
