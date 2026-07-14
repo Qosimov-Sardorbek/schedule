@@ -526,9 +526,7 @@ def bugun_handler(update, context, override_guruh=None):
         message.reply_text(s["no_group"])
         return
 
-    if guruh not in GROUP_IDS:
-        message.reply_text(s["group_not_found"].format(guruh))
-        return
+
 
     msg = message.reply_text(s["taking_screenshot"])
 
