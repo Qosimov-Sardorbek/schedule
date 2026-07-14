@@ -159,7 +159,14 @@ def fetch_all_groups_from_edupage():
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/121.0.0.0 Safari/537.36"
             )
             page = context.new_page()
-            page.goto("https://tsue.edupage.org/timetable/view.php?num=90", timeout=60000, wait_until="domcontentloaded")
+            page.goto("https://tsue.edupage.org/timetable/view.php?num=90", timeout=60000, wait_until="networkidle")
+            
+            # TTViewer va JS to'liq yuklanguncha kutamiz
+            try:
+                page.wait_for_selector('select, table, .timetable-container, #gi1878', timeout=15000)
+            except Exception:
+                pass
+            page.wait_for_timeout(3000)
             
             groups_dict = page.evaluate("""() => {
                 let groups = {};
@@ -205,23 +212,8 @@ def find_matching_group(query_text):
         if clean_g == query or query in clean_g or clean_g in query:
             return g
 
-    # 2. Agar kash bo'sh bo'lsa yoki topilmasa, saytdan bir marta yuklashga harakat qilamiz
-    if not DYNAMIC_GROUPS_CACHE or (time.time() - LAST_FETCH_TIME) > 3600:
-        try:
-            fetch_all_groups_from_edupage()
-        except Exception:
-            pass
-        for g in DYNAMIC_GROUPS_CACHE.keys():
-            if g.upper() == query_text.strip().upper():
-                return g
-        for g in DYNAMIC_GROUPS_CACHE.keys():
-            clean_g = g.upper().replace(" ", "").replace("-", "").split("/")[0]
-            if clean_g == query or query in clean_g or clean_g in query:
-                return g
-
-    # 3. KAFOLATLI QABUL QILISH (FALLBACK):
-    # Agar foydalanuvchi guruh nomiga o'xshash matn yozgan bo'lsa (masalan: RST-88/25, RST-88, MNP-80, I-50/24),
-    # hatto kash bo'sh bo'lsa ham uni HECH QACHON rad etmaymiz va "Assalomu alaykum"ga otib yubormaymiz!
+    # 2. KAFOLATLI QABUL QILISH (INSTANT FALLBACK - 0.001 soniyada):
+    # Hech qachon 5 soniya kutib foydalanuvchini qiynamaymiz!
     clean_raw = query_text.strip().upper()
     if "/" in clean_raw or "-" in clean_raw or any(c.isdigit() for c in clean_raw):
         if not "/" in clean_raw and any(c.isalpha() for c in clean_raw) and any(c.isdigit() for c in clean_raw):
@@ -384,7 +376,7 @@ def daily_notification_callback(context):
                 return
 
             kun_nomi = s["days"][kun]
-            caption = s["today_caption"].format(guruh, kun_nomi, f"{BASE_URL}{GROUP_IDS[guruh]}")
+            caption = s["today_caption"].format(guruh, kun_nomi, f"{BASE_URL}{DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh) or ""}")
 
             with open(filepath, "rb") as photo:
                 context.bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode="Markdown")
@@ -437,19 +429,15 @@ def guruh_tanlash(update, context):
     keyboard = []
 
     # Mashhur guruhlar
-    popular = ["RST-88/25"]
-
-    if not GROUP_IDS and not DYNAMIC_GROUPS_CACHE:
-        fetch_all_groups_from_edupage()
+    popular = ["RST-88/25", "MNP-80", "I-50/24"]
 
     for g in popular:
-        if g in GROUP_IDS or g in DYNAMIC_GROUPS_CACHE:
-            keyboard.append([
-                InlineKeyboardButton(
-                    f"{g}",
-                    callback_data=f"g_{g}"
-                )
-            ])
+        keyboard.append([
+            InlineKeyboardButton(
+                f"{g}",
+                callback_data=f"g_{g}"
+            )
+        ])
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -542,7 +530,7 @@ def bugun_handler(update, context, override_guruh=None):
 
     if error or not filepath:
         msg.edit_text(
-            s["error_screenshot"].format(error) + f"\n{BASE_URL}{GROUP_IDS[guruh]}"
+            s["error_screenshot"].format(error) + f"\n{BASE_URL}{DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh) or ""}"
         )
         return
 
@@ -553,7 +541,7 @@ def bugun_handler(update, context, override_guruh=None):
         caption = s["today_caption"].format(
             guruh,
             kun_nomi,
-            f"{BASE_URL}{GROUP_IDS[guruh]}"
+            f"{BASE_URL}{DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh) or ""}"
         )
 
         with open(filepath, "rb") as photo:
