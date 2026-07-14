@@ -189,25 +189,45 @@ def fetch_all_groups_from_edupage():
 
 
 def find_matching_group(query_text):
-    """Foydalanuvchi yozgan guruhni (rst-88) saytning o'zidan topilgan guruhlar ro'yxati orqali aniqlab beradi"""
+    """Foydalanuvchi yozgan guruhni (rst-88 -> RST-88/25) aniqlab beradi"""
     if not query_text or not isinstance(query_text, str):
         return None
     global DYNAMIC_GROUPS_CACHE, LAST_FETCH_TIME, GROUP_IDS
     
-    # Agar kash bo'sh bo'lsa yoki 6 soat o'tgan bo'lsa, saytdan yangilaymiz
-    if not DYNAMIC_GROUPS_CACHE or not GROUP_IDS or (time.time() - LAST_FETCH_TIME) > 21600:
-        fetch_all_groups_from_edupage()
-        
     query = query_text.strip().upper().replace(" ", "").replace("-", "")
-    # 1. Exact match
+    
+    # 1. Exact match in cache
     for g in DYNAMIC_GROUPS_CACHE.keys():
         if g.upper() == query_text.strip().upper():
             return g
-    # 2. Normalized match (rst-88 -> RST-88/25)
     for g in DYNAMIC_GROUPS_CACHE.keys():
         clean_g = g.upper().replace(" ", "").replace("-", "").split("/")[0]
         if clean_g == query or query in clean_g or clean_g in query:
             return g
+
+    # 2. Agar kash bo'sh bo'lsa yoki topilmasa, saytdan bir marta yuklashga harakat qilamiz
+    if not DYNAMIC_GROUPS_CACHE or (time.time() - LAST_FETCH_TIME) > 3600:
+        try:
+            fetch_all_groups_from_edupage()
+        except Exception:
+            pass
+        for g in DYNAMIC_GROUPS_CACHE.keys():
+            if g.upper() == query_text.strip().upper():
+                return g
+        for g in DYNAMIC_GROUPS_CACHE.keys():
+            clean_g = g.upper().replace(" ", "").replace("-", "").split("/")[0]
+            if clean_g == query or query in clean_g or clean_g in query:
+                return g
+
+    # 3. KAFOLATLI QABUL QILISH (FALLBACK):
+    # Agar foydalanuvchi guruh nomiga o'xshash matn yozgan bo'lsa (masalan: RST-88/25, RST-88, MNP-80, I-50/24),
+    # hatto kash bo'sh bo'lsa ham uni HECH QACHON rad etmaymiz va "Assalomu alaykum"ga otib yubormaymiz!
+    clean_raw = query_text.strip().upper()
+    if "/" in clean_raw or "-" in clean_raw or any(c.isdigit() for c in clean_raw):
+        if not "/" in clean_raw and any(c.isalpha() for c in clean_raw) and any(c.isdigit() for c in clean_raw):
+            return f"{clean_raw}/25" # Odatda TSUE guruhlari /25, /24, /23 bilan tugaydi
+        return clean_raw
+
     return None
 
 
@@ -217,10 +237,13 @@ def take_timetable_screenshot(guruh):
     browser = None
     try:
         # Saytdan guruh ID sini topamiz
-        group_id = DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh)
+        group_id = DYNAMIC_GROUPS_CACHE.get(guruh)
         if not group_id:
-            fetch_all_groups_from_edupage()
-            group_id = DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh)
+            try:
+                fetch_all_groups_from_edupage()
+                group_id = DYNAMIC_GROUPS_CACHE.get(guruh)
+            except Exception:
+                pass
 
         if group_id:
             url = f"{BASE_URL}{group_id}"
@@ -253,17 +276,24 @@ def take_timetable_screenshot(guruh):
             # Agar ID bo'lmasa, saytning o'zidan guruhni tanlab ochishga harakat qilamiz
             if not group_id:
                 try:
+                    page.wait_for_timeout(3500)
                     page.evaluate("""(targetGroup) => {
+                        let targetClean = targetGroup.toUpperCase().replace(/\s+/g, '').split('/')[0];
                         if (typeof asc !== 'undefined' && asc.ttviewer && asc.ttviewer.data && asc.ttviewer.data.classes) {
-                            let found = asc.ttviewer.data.classes.find(c => c.name.toUpperCase().includes(targetGroup.toUpperCase().split('/')[0]));
+                            let found = asc.ttviewer.data.classes.find(c => c.name && (c.name.toUpperCase().includes(targetClean) || c.name.toUpperCase() === targetGroup.toUpperCase()));
+                            if (found && found.id) {
+                                window.location.href = 'https://tsue.edupage.org/timetable/view.php?num=90&class=' + found.id;
+                            }
+                        } else if (typeof r !== 'undefined' && r.classes) {
+                            let found = r.classes.find(c => c.name && (c.name.toUpperCase().includes(targetClean) || c.name.toUpperCase() === targetGroup.toUpperCase()));
                             if (found && found.id) {
                                 window.location.href = 'https://tsue.edupage.org/timetable/view.php?num=90&class=' + found.id;
                             }
                         }
                     }""", guruh)
-                    page.wait_for_timeout(3000)
-                except:
-                    pass
+                    page.wait_for_timeout(3500)
+                except Exception as ex:
+                    print(f"⚠️ Dynamic redirect xatosi: {ex}")
 
             try:
                 page.wait_for_selector(".timetable-container, .timetable-grid, table.main-table, #main", timeout=15000)
