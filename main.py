@@ -1819,6 +1819,22 @@ def guruh_tanlash(update, context):
     )
 
 
+def find_matching_group(query_text):
+    if not query_text or not isinstance(query_text, str):
+        return None
+    query = query_text.strip().upper().replace(" ", "").replace("-", "")
+    # 1. First check exact match
+    for g in GROUP_IDS.keys():
+        if g.upper() == query_text.strip().upper():
+            return g
+    # 2. Check normalized match without /, -, spaces (e.g. rst-88 -> RST-88/25)
+    for g in GROUP_IDS.keys():
+        clean_g = g.upper().replace(" ", "").replace("-", "").split("/")[0]
+        if clean_g == query or query in clean_g or clean_g in query:
+            return g
+    return None
+
+
 def callback_handler(update, context):
     """Callback"""
     query = update.callback_query
@@ -1856,23 +1872,29 @@ def callback_handler(update, context):
             s["group_selected"].format(guruh),
             parse_mode="Markdown",
         )
+        # Avtomatik ravishda dars jadvalini screen qilib yuboramiz
+        bugun_handler(update, context, override_guruh=guruh)
 
 
-def bugun_handler(update, context):
+def bugun_handler(update, context, override_guruh=None):
     """Bugungi darslar - RASM bilan"""
     lang = context.user_data.get("lang", "uz")
     s = STRINGS[lang]
-    guruh = context.user_data.get("guruh")
+    guruh = override_guruh or context.user_data.get("guruh")
+
+    message = update.message if update.message else (update.callback_query.message if update.callback_query else None)
+    if not message:
+        return
 
     if not guruh:
-        update.message.reply_text(s["no_group"])
+        message.reply_text(s["no_group"])
         return
 
     if guruh not in GROUP_IDS:
-        update.message.reply_text(s["group_not_found"].format(guruh))
+        message.reply_text(s["group_not_found"].format(guruh))
         return
 
-    msg = update.message.reply_text(s["taking_screenshot"])
+    msg = message.reply_text(s["taking_screenshot"])
 
     # Screenshot olish
     filepath, error = take_timetable_screenshot(guruh)
@@ -1894,7 +1916,7 @@ def bugun_handler(update, context):
         )
 
         with open(filepath, "rb") as photo:
-            update.message.reply_photo(
+            message.reply_photo(
                 photo=photo,
                 caption=caption,
                 parse_mode="Markdown",
@@ -1961,17 +1983,17 @@ def message_handler(update, context):
         choose_language(update, context)
 
     else:
-        # Guruh nomini tekshirish
-        user_text = text.strip().upper()
-
-        for g in GROUP_IDS.keys():
-            if g.upper() == user_text:
-                context.user_data["guruh"] = g
-                update.message.reply_text(
-                    s["group_selected"].format(g),
-                    parse_mode="Markdown",
-                )
-                return
+        # Guruh nomini aqlli qidirish (rst-88 -> RST-88/25)
+        matched_g = find_matching_group(text)
+        if matched_g:
+            context.user_data["guruh"] = matched_g
+            update.message.reply_text(
+                s["group_selected"].format(matched_g),
+                parse_mode="Markdown",
+            )
+            # Avtomatik ravishda dars jadvali rasmini yuborish
+            bugun_handler(update, context, override_guruh=matched_g)
+            return
 
         # Default welcome message if not a group
         update.message.reply_text(
