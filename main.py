@@ -223,6 +223,13 @@ def find_matching_group(query_text):
     return None
 
 
+def get_group_url(g):
+    gid = DYNAMIC_GROUPS_CACHE.get(g) or GROUP_IDS.get(g)
+    if gid:
+        return f"{BASE_URL}{gid}"
+    return "https://tsue.edupage.org/timetable/view.php?num=90"
+
+
 def take_timetable_screenshot(guruh):
     """Saytga o'zi kirib guruh jadvalini avtomatik topib rasmga oladi"""
     global DYNAMIC_GROUPS_CACHE, GROUP_IDS
@@ -270,7 +277,7 @@ def take_timetable_screenshot(guruh):
                 try:
                     page.wait_for_timeout(3500)
                     page.evaluate("""(targetGroup) => {
-                        let targetClean = targetGroup.toUpperCase().replace(/\s+/g, '').split('/')[0];
+                        let targetClean = targetGroup.toUpperCase().replace(/\\s+/g, '').split('/')[0];
                         if (typeof asc !== 'undefined' && asc.ttviewer && asc.ttviewer.data && asc.ttviewer.data.classes) {
                             let found = asc.ttviewer.data.classes.find(c => c.name && (c.name.toUpperCase().includes(targetClean) || c.name.toUpperCase() === targetGroup.toUpperCase()));
                             if (found && found.id) {
@@ -376,7 +383,7 @@ def daily_notification_callback(context):
                 return
 
             kun_nomi = s["days"][kun]
-            caption = s["today_caption"].format(guruh, kun_nomi, f"{BASE_URL}{DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh) or ""}")
+            caption = s["today_caption"].format(guruh, kun_nomi, get_group_url(guruh))
 
             with open(filepath, "rb") as photo:
                 context.bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode="Markdown")
@@ -529,9 +536,7 @@ def bugun_handler(update, context, override_guruh=None):
     filepath, error = take_timetable_screenshot(guruh)
 
     if error or not filepath:
-        msg.edit_text(
-            s["error_screenshot"].format(error) + f"\n{BASE_URL}{DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh) or ""}"
-        )
+        msg.edit_text(s["error_screenshot"].format(error) + "\n" + get_group_url(guruh))
         return
 
     try:
@@ -541,7 +546,7 @@ def bugun_handler(update, context, override_guruh=None):
         caption = s["today_caption"].format(
             guruh,
             kun_nomi,
-            f"{BASE_URL}{DYNAMIC_GROUPS_CACHE.get(guruh) or GROUP_IDS.get(guruh) or ""}"
+            get_group_url(guruh)
         )
 
         with open(filepath, "rb") as photo:
